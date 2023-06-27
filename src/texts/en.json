@@ -1,0 +1,72 @@
+{
+    "app": {
+        "next": "Next",
+        "back": "Back"
+    },
+    "context": {
+        "header": "Context Questions",
+        "targetChildAge": "Target Child Age",
+        "siblings": "Siblings",
+        "addSibling": "Add Sibling",
+        "siblingsLivingTogether": "All siblings are living together?",
+        "schoolAge": "school age?",
+        "gradeAtSchool": "select grade at school",
+        "favoriteActivities": "favorite activities",
+        "dislikedActivities": "disliked activities"
+    },
+    "challenge": {
+        "header": "Challenge",
+        "description": "Please describe the main challenge the child is facing. This challenge will be the theme of the video!",
+        "select": "select a challenge"
+    },
+    "educational methods": {
+        "header": "educational methods"
+    },
+    "config output": {
+        "header": "config output"
+    },
+    "stream script": {
+        "header": "stream script"
+    },
+    "edit script": {
+        "header": "edit script"
+    },
+    "config avatar": {
+        "header": "config avatar"
+    },
+    "finalize": {
+        "header": "finalize"
+    },
+    "answers": {
+        "favoriteActivities": {
+            "reading": "reading", 
+            "playing pretend": "playing pretend", 
+            "sports": "sports", 
+            "dolls": "dolls", 
+            "dance": "dance"
+        },
+        "dislikedActivities": {
+            "chores": "chores", 
+            "school": "school", 
+            "shower": "shower", 
+            "go to bed": "go to bed"
+        },
+        "challenges": {
+            "making new friends": "making new friends", 
+            "bad dreams": "bad dreams", 
+            "only wants candy": "only wants candy"
+        },
+        "educationalMethods": {
+            "Montessori": "Montessori", 
+            "Waldorf": "Waldorf", 
+            "Reggio Emilia": "Reggio Emilia", 
+            "Constructivism": "Constructivism", 
+            "Traditional": "Traditional"
+        },
+        "deliveryStyle": {
+            "educational": "educational",
+            "counsel": "counsel", 
+            "story": "story"
+        }
+    }
+}

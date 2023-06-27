@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { WizardContext, stateDict } from './store'
 import { Button, ButtonGroup, FormControl, IconButton, Input, InputLabel, Stack, Typography } from '@mui/material'
 import { RemoveCircleOutline } from '@mui/icons-material'

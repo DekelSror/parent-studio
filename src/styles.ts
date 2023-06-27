@@ -61,7 +61,7 @@ export const theme = responsiveFontSizes(createTheme({
     },
 }))
 
-export const RemoveButton = styled(Button)(({theme}) => ({
+export const RemoveButton = styled(Button)(() => ({
     color: colors.black,
     '&:hover': {
         backgroundColor: colors.darkGrey,
@@ -71,7 +71,7 @@ export const RemoveButton = styled(Button)(({theme}) => ({
     }
 }))
 
-export const AddButton = styled(Button)(({theme}) => ({
+export const AddButton = styled(Button)(() => ({
     color: colors.black,
     // width: 'fit-content',
     backgroundColor: colors.tan,
@@ -86,7 +86,7 @@ export const AddButton = styled(Button)(({theme}) => ({
     }
 }))
 
-export const NavButton = styled(Button)(({theme}) => ({
+export const NavButton = styled(Button)(() => ({
     backgroundColor: colors.orange,
     fontFamily: 'DM Sans',
     color: colors.white,
@@ -98,7 +98,7 @@ export const NavButton = styled(Button)(({theme}) => ({
     }
 }))
 
-export const ButtonGroupButton = styled(Button)(({theme}) => ({
+export const ButtonGroupButton = styled(Button)(() => ({
     flex: 1, 
     border: 'unset',
     color: colors.black,
@@ -115,7 +115,7 @@ export const ButtonGroupButton = styled(Button)(({theme}) => ({
     }
 }))
 
-export const AppContainer = styled(Stack)(({theme}) => ({
+export const AppContainer = styled(Stack)(() => ({
     backgroundColor: theme.palette.background.paper,
     padding: '80px 40px 0px 40px',
     alignItems: 'center',
@@ -123,12 +123,12 @@ export const AppContainer = styled(Stack)(({theme}) => ({
 
 }))
 
-export const DSlider = styled(Slider)(({theme}) => ({
+export const DSlider = styled(Slider)(() => ({
     color: colors.darkerBlue,
     maxWidth: '50%'
 }))
 
-export const DSwitch = styled(Switch)(({theme}) => ({
+export const DSwitch = styled(Switch)(() => ({
     '& .MuiSwitch-switchBase': {
         '&.Mui-checked': {
             color: colors.darkerBlue,
@@ -139,25 +139,25 @@ export const DSwitch = styled(Switch)(({theme}) => ({
     },
 }))
 
-export const DInput = styled(Input)(({theme}) => ({
+export const DInput = styled(Input)(() => ({
     '&:after': {
         borderBottom: '2px solid #333333'
     }
 }))
 
-export const StepContainer = styled(Stack)(({theme}) => ({
+export const StepContainer = styled(Stack)(() => ({
     backgroundColor: theme.palette.background.default,
     padding: '5rem 3rem 5rem 3rem',
     boxShadow: '2px 1px 1px #777777',
     width: '70%',
 }))
 
-export const StreamScript = styled(Typography)(({theme}) => ({
+export const StreamScript = styled(Typography)(() => ({
     textAlign: 'left',
 }))
 
 
-export const SelectLabel = styled(InputLabel)(({theme}) => ({
+export const SelectLabel = styled(InputLabel)(() => ({
     fontSize: 17,
     color: colors.darkerBlue,
     transition: 'font-size color 200ms',
@@ -167,7 +167,7 @@ export const SelectLabel = styled(InputLabel)(({theme}) => ({
     }
 }))
 
-export const SelectInput = styled(OutlinedInput)(({theme}) => ({
+export const SelectInput = styled(OutlinedInput)(() => ({
     backgroundColor: theme.palette.background.paper,
     width: '12rem',
     color: colors.grey,
@@ -180,7 +180,7 @@ export const SelectInput = styled(OutlinedInput)(({theme}) => ({
 }))
 
 
-export const SelectItem = styled(MenuItem)(({theme}) => ({
+export const SelectItem = styled(MenuItem)(() => ({
     paddingBottom: '1rem',
     transition: 'background 200ms',
     ':hover': {
@@ -196,7 +196,7 @@ export const SelectItem = styled(MenuItem)(({theme}) => ({
 }))
 
 
-export const DDialog = styled(Dialog)(({theme}) => ({
+export const DDialog = styled(Dialog)(() => ({
     '&. MuiDialog-paper': {
         width: '50%'
     }

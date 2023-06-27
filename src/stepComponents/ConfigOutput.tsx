@@ -1,5 +1,5 @@
 import { Button, Collapse, Stack, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { DSlider } from '../styles'
 import { WizardContext, answers } from '../store'
 import OptionsAndInput from '../OptionsAndInput'
@@ -23,9 +23,9 @@ const ConfigOutput = ({onChange}: {onChange: (config: {videoLength: number, deli
                         max={120}
                         step={30}
                         valueLabelDisplay='auto'
-                        valueLabelFormat={(val, i) => val + ' seconds'}
+                        valueLabelFormat={val => val + ' seconds'}
                         marks={[{value: 30},{value: 60},{value: 90},{value: 120}]}
-                        onChange={(e, val) => onChange({videoLength: val as number, deliveryStyle: outputConfig.deliveryStyle})}
+                        onChange={(_, val) => onChange({videoLength: val as number, deliveryStyle: outputConfig.deliveryStyle})}
                     />
                 </Stack>
 

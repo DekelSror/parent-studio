@@ -1,6 +1,6 @@
-import { Divider, Stack, Typography, styled } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import { RemoveButton, AddButton, colors, DInput } from './styles'
+import { Divider, Stack, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { RemoveButton, AddButton, DInput } from './styles'
 
 type FreeTextListProps = {
     initialItems: string[], 
@@ -9,12 +9,12 @@ type FreeTextListProps = {
     description?: string
 }
 
-const FTLContainer = styled(Stack)(({theme}) => ({
-    width: 'fit-content',
-    [theme.breakpoints.down('sm')]: {
-        width: '100%'
-    },
-}))
+// const FTLContainer = styled(Stack)(({theme}) => ({
+//     width: 'fit-content',
+//     [theme.breakpoints.down('sm')]: {
+//         width: '100%'
+//     },
+// }))
 
 const FreeTextList = ({initialItems, onChange, addLabel, description}: FreeTextListProps) => {
     const [items, setItems] = useState<string[]>(initialItems)

@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Input, FormControl, Select, Stack, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ButtonGroupButton, SelectInput, SelectItem, colors } from './styles'
 
 
@@ -74,7 +74,7 @@ const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent,
             {!multiple && (written.length > 0) && <Typography> {written[0]} </Typography>}
 
             <Input style={{width: '45%', height: 50}} type='text' value={edited} onChange={e => setEdited(e.target.value)} />
-            <Button onClick={e => {
+            <Button onClick={() => {
                 if (edited !== '') {
                     setWritten([...written, edited])
                     setEdited('')

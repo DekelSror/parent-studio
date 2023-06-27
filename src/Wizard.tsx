@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useState } from 'react'
+import { createContext, useContext, useRef, useState } from 'react'
 import { NavButton, StepContainer } from './styles'
 import { Backdrop, Stack, Typography, styled } from '@mui/material'
 import Challenge from './stepComponents/Challenge'
@@ -16,10 +16,10 @@ import PromptBuilder from './PromptBuilder'
 enum AppStep {context, output, review, finalize}
 
 export const expandedContext = createContext<{expanded: string | undefined, setExpanded: (val: string | undefined) => void}>(
-    {expanded: undefined, setExpanded: val => {}}
+    {expanded: undefined, setExpanded: _ => {}}
 )
 
-const DBackdrop = styled(Backdrop)(({theme}) => ({
+const DBackdrop = styled(Backdrop)(() => ({
     backdropFilter: 'blur(3px)',
 }))
 
@@ -61,8 +61,8 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
     }
 
     const generateVideo = async() => {
-        const videoId = await backend.generateVideo(state)
-        setVideoId(videoId) // save somehow for future use
+        const videoIdNew = await backend.generateVideo(state)
+        setVideoId(videoIdNew) // save somehow for future use
 
         progressInterval.current = setInterval(async() => {
             if (videoId) {

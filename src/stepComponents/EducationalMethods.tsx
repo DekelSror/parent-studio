@@ -1,5 +1,5 @@
 import { Button, Collapse, Stack, Tooltip, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import OptionsAndInput from '../OptionsAndInput'
 import { answers } from '../store'
 import { expandedContext } from '../Wizard'

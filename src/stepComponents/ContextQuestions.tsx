@@ -1,5 +1,5 @@
 import { Checkbox, Collapse, Divider, Stack, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { FamilyContext, WizardContext, answers } from '../store'
 import { AddButton, DSlider, DSwitch, SelectLabel, colors } from '../styles'
 import { globz } from '../globalize'
@@ -26,7 +26,7 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
                 step={1}
                 valueLabelDisplay='auto'
                 value={context.targetChildAge}
-                onChange={(e, val) => onSubmit({...context, targetChildAge: (val as number)})}
+                onChange={(_, val) => onSubmit({...context, targetChildAge: (val as number)})}
             />
         </Stack>
 
@@ -54,7 +54,7 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
                     step={1}
                     value={siblingAge}
                     valueLabelDisplay='auto'
-                    onChange={(e, val) => setSiblingAge(val as number)}
+                    onChange={(_, val) => setSiblingAge(val as number)}
                 />
                 <AddButton 
                     style={{alignSelf: 'center'}}
@@ -71,14 +71,14 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
             <Stack direction='row' justifyContent='space-around' alignItems='start' marginBottom={4}>
                     <Typography variant='subtitle1' > {globz('context.siblingsLivingTogether')} </Typography>
                     <form>
-                        <DSwitch value={context.liveTogether} onChange={(e, val) => onSubmit({...context, liveTogether: val})} />
+                        <DSwitch value={context.liveTogether} onChange={(_, val) => onSubmit({...context, liveTogether: val})} />
                     </form>
             </Stack>
 
             <form>
                 <Stack direction='row' alignItems='center' paddingBottom={4} >
                     <Typography variant='body2' > {globz('context.schoolAge')} </Typography>
-                    <Checkbox color='success' checked={childAtSchool} onChange={(e, checked) => setChildAtSchool(checked)} />
+                    <Checkbox color='success' checked={childAtSchool} onChange={(_, checked) => setChildAtSchool(checked)} />
 
                     <Typography variant='body2' > {globz('context.gradeAtSchool')} </Typography>
                     <DSlider
@@ -87,7 +87,7 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
                         step={1}
                         valueLabelDisplay='auto'
                         value={context.gradeAtSchool || 1}
-                        onChange={(e, val) => onSubmit({...context, gradeAtSchool: val as number})}
+                        onChange={(_, val) => onSubmit({...context, gradeAtSchool: val as number})}
                         disabled={!childAtSchool}
                     />
                 </Stack>

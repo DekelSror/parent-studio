@@ -1,5 +1,5 @@
 import { AppBar, Box, Button, CssBaseline, Stack, ThemeProvider, Toolbar, Typography } from '@mui/material'
-import React, { createContext, useState } from 'react'
+import { createContext, useState } from 'react'
 import { AppContainer, StepContainer, theme, colors, AddButton, SelectInput } from './styles'
 import Wizard from './Wizard'
 
@@ -37,7 +37,7 @@ const App = () => {
 
         {where === 'home' && <StepContainer gap={3} >
             <Typography variant='h4' textAlign='center' > WELCOME blah blah blah </Typography>
-            <form style={{display: 'flex', gap: '1.2rem', justifyContent: 'center'}} onSubmit={e => {
+            <form style={{display: 'flex', gap: '1.2rem', justifyContent: 'center'}} onSubmit={() => {
                 const u = superUsers.find(su => su.email === user.email)
 
                 if (u) {
@@ -65,7 +65,7 @@ const App = () => {
 
 
         {where === 'wizard' && <userContext.Provider value={user}>
-            <Wizard onSubmit={stt => {}} onExit={() => setWhere('home')} />
+            <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />
         </userContext.Provider>}
 
         <Stack direction='row' gap={4}>

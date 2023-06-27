@@ -1,5 +1,5 @@
 import { Button, Card, CardMedia, Stack, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { WizardContext } from '../store'
 
 

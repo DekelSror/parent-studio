@@ -1,6 +1,6 @@
 import { createContext, useContext, useRef, useState } from 'react'
 import { NavButton, StepContainer } from './styles'
-import { Backdrop, Stack, Typography, styled } from '@mui/material'
+import { Backdrop, Button, Stack, Typography, styled } from '@mui/material'
 import Challenge from './stepComponents/Challenge'
 import ConfigAvatar from './stepComponents/ConfigAvatar'
 import ConfigOutput from './stepComponents/ConfigOutput'
@@ -10,8 +10,10 @@ import EducationalMethods from './stepComponents/EducationalMethods'
 import Finalize from './stepComponents/Finalize'
 import { WizardState, WizardContext, testState } from './store'
 import useBackend from './Backend'
-import { userContext } from './App'
 import PromptBuilder from './PromptBuilder'
+import { useAuth0 } from '@auth0/auth0-react'
+import { UserDataContext } from './App'
+import { setUserData } from './users'
 
 enum AppStep {context, output, review, finalize}
 
@@ -27,8 +29,10 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
     const [state, setState] = useState<WizardState>(testState())
     const backend = useBackend()
     const [expanded, setExpanded] = useState<string>()
-    const [currentStep, setCurrentStep] = useState<AppStep>(AppStep.context)
-    const user = useContext(userContext)
+    const [currentStep, setCurrentStep] = useState(AppStep.context)
+    const {user} = useAuth0()
+    const userData = useContext(UserDataContext)
+    const isStreaming = useRef(false)
     
 
     // should be part of some store...
@@ -37,13 +41,16 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
     const progressInterval = useRef<NodeJS.Timer>()
 
     const generateScript = () => {
+        isStreaming.current = true
+
         backend.streamScript(state, delta => {
                     
             const lastFinishReason = delta[delta.length - 1].choices[0].finish_reason
             const lastContent = delta[delta.length - 1].choices[0].delta.content
             if (lastFinishReason === 'stop' || (!lastContent)) {
-                state.prompt = backend.scriptPrompt(state)  
-                setCurrentStep(AppStep.output)
+                state.prompt = backend.scriptPrompt(state)
+                isStreaming.current = false
+
             }
             
             const parsed = delta.reduce((s, d) => {
@@ -62,55 +69,84 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
 
     const generateVideo = async() => {
         const videoIdNew = await backend.generateVideo(state)
-        setVideoId(videoIdNew) // save somehow for future use
-
-        progressInterval.current = setInterval(async() => {
-            if (videoId) {
+        
+        if (videoIdNew) {
+            setVideoId(videoIdNew) // set user data with new videoId
+            setUserData({...userData!, videos: [...userData!.videos, videoIdNew]})
+            
+            progressInterval.current = setInterval(async() => {
+                    
+                const statusOrUrl = await backend.videoProgress(videoId!)
                 
-            }
-            const statusOrUrl = await backend.videoProgress(videoId!)
-
-            if (statusOrUrl.startsWith('http')) {
-                setState({...state, outputUrl: statusOrUrl})
-                clearInterval(progressInterval.current)
-                onSubmit(state)
-            }
-        }, 3000)
+                if (statusOrUrl.startsWith('http')) {
+                    setState({...state, outputUrl: statusOrUrl})
+                    clearInterval(progressInterval.current)
+                    onSubmit(state)
+                }
+            }, 3000)
+        }
     }
 
+    const testSetUser = async() => {
+        const res = await fetch(import.meta.env.VITE_KV_REST_API_URL + '/set/abe@maisautonomia.com.br', {
+            method: 'post',
+            headers: {
+                Authorization: 'Bearer ' + import.meta.env.VITE_KV_REST_API_TOKEN
+            },
+            body: JSON.stringify({
+                tier: 'editor',
+                videos: [],
+                savedAnswers: testState()
+            })
+        })
+
+        const j = await res.json()
+
+        console.log(j)
+    }
+
+    console.log('wizard', AppStep[currentStep])
+            
     return <WizardContext.Provider value={state}>
         <expandedContext.Provider value={{expanded: expanded, setExpanded: setExpanded}}>
+        <Typography> hello, {user?.given_name} | {user?.locale} </Typography>
+        
+        <Button onClick={testSetUser} > TEST SET USER </Button>
+
         <StepContainer gap={2}>
             <Typography variant='h3' > Context </Typography>
             <Challenge onChange={challenge => setState({...state, challenge: challenge})} />
             <ContextQuestions onSubmit={ctx => setState({...state, context: ctx})} />
             <EducationalMethods onSubmit={methods => setState({...state, educationalMethods: methods})} />
             <ConfigOutput onChange={config => setState({...state, outputConfig: config})} />
-            {user.role === 'editor' && <PromptBuilder />}
+            {userData?.tier === 'editor' && <PromptBuilder />}
             <NavButton disabled={currentStep !== AppStep.context} onClick={() => setCurrentStep(AppStep.review)} > Generate Script </NavButton>
         </StepContainer>
         </expandedContext.Provider>
 
-        <DBackdrop open={currentStep === AppStep.review} onClick={() => setCurrentStep(AppStep.context)} sx={{zIndex: 3}} >
+        <DBackdrop open={currentStep === AppStep.review} sx={{zIndex: 3}} >
             <StepContainer p={2} gap={3} height={400} overflow='scroll'>
 
                 <Typography variant='subtitle2'>please review your stuff</Typography>
                 <Typography variant='subtitle1' style={{maxHeight: 270, whiteSpace: 'break-spaces', overflowY: 'scroll'}}> 
-                    {JSON.stringify(state, null, 4)}  
+                    {JSON.stringify(state, null, 4)}
                 </Typography>
-                <NavButton disabled={(currentStep !== AppStep.review) || user.role === 'guest'} onClick={() => {
-                    generateScript()
-                    setCurrentStep(AppStep.output)
-                }} > 
-                    {user.role === 'guest' ? 'Please register with us to start generating' : 'Go!'}
+                <NavButton
+                    disabled={(currentStep !== AppStep.review) || (userData?.tier === 'guest')} 
+                    onClick={() => {
+                        setCurrentStep(AppStep.output)
+                        generateScript()
+                    }} 
+                > 
+                    {userData?.tier === 'guest' ? 'Please register with us to start generating' : 'Go!'}
                 </NavButton>
             </StepContainer>
         </DBackdrop>
 
         {currentStep === AppStep.output && <StepContainer >
-            <EditScript onChange={script => setState({...state, script: script})} />
+            <EditScript onChange={script => setState({...state, script: script})} active={isStreaming.current} />
             <ConfigAvatar />
-            <NavButton disabled={user.role === 'guest'} onClick={() => {
+            <NavButton disabled={user === undefined} onClick={() => {
                 generateVideo()
                 setCurrentStep(AppStep.finalize)
             }} >
@@ -119,11 +155,13 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
         </StepContainer>}
 
         {currentStep === AppStep.finalize && <StepContainer>
+            <EditScript onChange={_ => {}} active={false} />
             <Finalize />
         </StepContainer>}
 
         <Stack direction='row' gap={4} justifyContent='space-around' >
             <NavButton onClick={onExit} > exit </NavButton>
+            <NavButton onClick={() => setCurrentStep(AppStep.context)} > restart </NavButton>
         </Stack>
 
     </WizardContext.Provider>

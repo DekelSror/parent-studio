@@ -73,7 +73,7 @@ export const RemoveButton = styled(Button)(() => ({
 
 export const AddButton = styled(Button)(() => ({
     color: colors.black,
-    // width: 'fit-content',
+    maxWidth: 'fit-content',
     backgroundColor: colors.tan,
     transition: 'font-weight 300ms, background-color 300ms ease-in',
     '&:hover': {
@@ -90,6 +90,7 @@ export const NavButton = styled(Button)(() => ({
     backgroundColor: colors.orange,
     fontFamily: 'DM Sans',
     color: colors.white,
+    maxWidth: 'fit-content',
     ':hover': {
         color: colors.black,
     },

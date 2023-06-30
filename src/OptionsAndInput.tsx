@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Input, FormControl, Select, Stack, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ButtonGroupButton, SelectInput, SelectItem, colors } from './styles'
 
 
@@ -13,14 +13,14 @@ type OptionsAndInputProps = {
 }
 
 const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent, addLabel}: OptionsAndInputProps) => {
-    const [selected, setSeleted] = useState<string[]>([])
+    const [selected, setSelected] = useState<string[]>([])
     const [written, setWritten] = useState<string[]>([])
     const [edited, setEdited] = useState('')
 
-    useEffect(() => {
-        const val = selected.concat(written)
+    const handleChange = (val: string[]) => {
+        setSelected(val)
         onChange(multiple ? val : val[0])
-    }, [selected, written, multiple, onChange])
+    }
 
     return <Stack>
         <ButtonGroup style={{display: 'flex', flexDirection: 'row', gap: 10, flex: 4, padding: 2}} >
@@ -32,14 +32,14 @@ const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent,
                         if (selected.includes(opt)) {
                             let after = selected.slice()
                             after.splice(i)
-                            setSeleted(after)
+                            handleChange(after)
                         }
                         else {
                             if (multiple) {
-                                setSeleted([...selected, opt])
+                                handleChange([...selected, opt])
                             }
                             else {
-                                setSeleted([opt])
+                                handleChange([opt])
                             }
                         }
                     }}

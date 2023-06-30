@@ -72,8 +72,8 @@ class IndexedDBAccessor implements DbAccessor {
 }
 
 class Backend {
-    openaiKey = import.meta.env.REACT_APP_OPENAI_KEY
-    dIdKey = import.meta.env.REACT_APP_DID_KEY
+    openaiKey = import.meta.env.VITE_OPENAI_KEY
+    dIdKey = import.meta.env.VITE_DID_KEY
 
     promptsDB: DbAccessor
     client = new OpenAIApi(new Configuration({
@@ -81,15 +81,17 @@ class Backend {
     }))
 
     
+    
+    constructor(db: DbAccessor) {
+        this.promptsDB = db
+    }
+
+
     dIdHeaders: HeadersInit = {
         accept: 'application/json',
         Authorization: 'Basic ' + this.dIdKey
     }
     
-    
-    constructor(db: DbAccessor) {
-        this.promptsDB = db
-    }
 
     generateVideo = async(state: WizardState) => {
         const response = await fetch('https://api.d-id.com/clips', {
@@ -105,14 +107,17 @@ class Backend {
             })
         })
 
-        const body: {
-            id: string,
-            created_at: Date,
-            status: string,
-            object: string,
-        }  = await response.json()
-        
-        return body.id
+        if ([200, 201].includes(response.status)) {
+            const body: {
+                id: string,
+                created_at: Date,
+                status: string,
+                object: string,
+            }  = await response.json()
+            
+            return body.id
+        }
+
     }
     
     videoProgress = async(id: string) => {
@@ -149,7 +154,7 @@ class Backend {
                     role: 'user', 
                     content: content,
                 }],
-                // max_tokens: 10,
+                max_tokens: 200,
                 stream: true
             }, 
             { onDownloadProgress: e => onDelta(this.handleChatStream(e))}

@@ -1,25 +1,41 @@
 import { AppBar, Box, Button, CssBaseline, Stack, ThemeProvider, Toolbar, Typography } from '@mui/material'
-import { createContext, useState } from 'react'
-import { AppContainer, StepContainer, theme, colors, AddButton, SelectInput } from './styles'
+import { createContext, useEffect, useState } from 'react'
+import { AppContainer, StepContainer, theme, colors, NavButton } from './styles'
 import Wizard from './Wizard'
+import { useAuth0 } from '@auth0/auth0-react'
+import { UserData, getUserData } from './users'
 
-export type User = {
-    email: string
-    role: 'editor' | 'user' | 'guest'
-    // creds?: CredentialResponse
-}
 
-export const userContext = createContext<User>({email: 'guest@cactus.br', role: 'guest'})
-
-const superUsers: User[] = [
-    {email: 'guest@cactus.br', role: 'guest'},
-    {email: 'srordekel@gmail.com', role: 'editor'},
-    {email: 'abe@maisautonomia.com.br', role: 'editor'}
-]
+export const UserDataContext = createContext<UserData | undefined>(undefined)
 
 const App = () => {
-    const [user, setUser] = useState<User>({email: 'guest@cactus.br', role: 'guest'})
+    const auth = useAuth0()
+    const [userData, setUserData] = useState<UserData>()
+    
+    
     const [where, setWhere] = useState('home')
+    console.log('app rendered!', where, auth.user, userData)
+
+    useEffect(() => {
+        if (auth.user !== undefined) {
+            if (auth.user.email !== undefined) {
+                setWhere('wizard')
+                getUserData(auth.user.email).then(udata => {
+                    if (udata) {
+                        setUserData(udata)
+                        // if (where === 'home') setWhere('wizard')
+                    }
+                    else {
+                        // first time??
+                    }
+                })
+            } else {
+                setUserData(undefined)
+            }
+        }
+    }, [auth.user])
+
+    if (auth.isLoading) return <>loading auth</>
 
     return <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -27,46 +43,25 @@ const App = () => {
 
         <AppBar sx={{backgroundColor: colors.purple}} >
             <Toolbar>
+                {auth.user && <Button onClick={() => auth.logout()} >logout</Button>}
                 <Button variant='contained' > LOGO or Something </Button>
                 <Box width='100%' />
-                <Button variant='text'> <Typography color={colors.white} variant='body1'> alguma coisa </Typography> </Button>
-                <Button variant='text'> <Typography color={colors.white} variant='body1'> about us </Typography> </Button>
-                <Button variant='text'> <Typography color={colors.white} variant='body1'> {where} </Typography> </Button>
+                {!auth.isAuthenticated && <Button onClick={() => auth.loginWithRedirect()} > LOGIN </Button>}
             </Toolbar>
         </AppBar>
 
+
+
         {where === 'home' && <StepContainer gap={3} >
             <Typography variant='h4' textAlign='center' > WELCOME blah blah blah </Typography>
-            <form style={{display: 'flex', gap: '1.2rem', justifyContent: 'center'}} onSubmit={() => {
-                const u = superUsers.find(su => su.email === user.email)
-
-                if (u) {
-                    setUser({...user, role: u.role})
-                    setWhere('wizard')
-                }
-
-            }}>
-                <SelectInput 
-                    placeholder='enter your e-mail to start creating immediately'
-                    value={user.email || ''}
-                    type='email' 
-                    error={(user.email!== undefined) && (user.email !== '')}
-                    onChange={e => {
-                        setUser({...user, email: e.target.value})
-                    }}
-                />
-                <AddButton type='submit' > Start now! </AddButton>
-            </form>
-            {/* <GoogleLogin 
-                onSuccess={creds => setUser({...user, creds: creds})}
-                onError={alert}
-            /> */}
+            {!auth.isAuthenticated && <NavButton onClick={() => auth.loginWithRedirect()} > LOGIN </NavButton>}
+            {auth.isAuthenticated && userData && <NavButton onClick={() => setWhere('wizard')} > go to wizard </NavButton>}
+            {userData?.tier === 'editor' && <> add / remove users </>}
         </StepContainer>}
 
-
-        {where === 'wizard' && <userContext.Provider value={user}>
-            <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />
-        </userContext.Provider>}
+        <UserDataContext.Provider value={userData}>
+            {(userData !== undefined) && (where === 'wizard') && <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />}
+        </UserDataContext.Provider>
 
         <Stack direction='row' gap={4}>
             <Typography variant='body2'> footer </Typography>

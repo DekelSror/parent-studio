@@ -92,3 +92,26 @@ export const testState: () => WizardState = () => ({
     },
     outputUrl: undefined
 })
+
+export const testState2 = () => ({
+    context: {
+        targetChildAge: 50,
+        siblings: [-4, 152],
+        favoriteActivities: ['testing databases', 'testing auth services'],
+        dislikedActivities: ['devOps', 'containers'],
+        liveTogether: true,
+        gradeAtSchool: 37
+    },
+    challenge: 'hosting an app',
+    educationalMethods: ['burgerbacon'],
+    prompt: "Have you ever had a dream where you wanted someone to do you so much you could do anything?",
+    script: "This is where we will write the script for your video!",
+    outputConfig: {
+        videoLength: 60,
+        deliveryStyle: 'educational',
+    },
+    avatarConfig: {
+        gender: 'f'
+    },
+    outputUrl: undefined
+})

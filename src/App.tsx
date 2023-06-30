@@ -34,6 +34,8 @@ const App = () => {
         }
     }, [auth.user])
 
+    console.log(import.meta.env.MODE, import.meta.env.PROD, import.meta.env.DEV)
+
     if (auth.isLoading) return <>loading auth</>
 
     return <ThemeProvider theme={theme}>

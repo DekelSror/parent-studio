@@ -8,10 +8,13 @@ export type UserData = {
 }
 
 export const getUserData = async(email: string) => {
-    const res = await fetch(import.meta.env.KV_REST_API_URL + '/get/' + email, {
+    const url = import.meta.env.PROD ? import.meta.env.KV_REST_API_URL : import.meta.env.VITE_KV_REST_API_URL
+    const token = import.meta.env.PROD ? import.meta.env.KV_REST_API_TOKEN_READONLY : import.meta.env.VITE_KV_REST_API_TOKEN_READONLY
+    
+    const res = await fetch(url + '/get/' + email, {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + import.meta.env.KV_REST_API_TOKEN_READONLY
+            Authorization: 'Bearer ' + token
         }
     })
     

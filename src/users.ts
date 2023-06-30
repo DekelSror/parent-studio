@@ -8,10 +8,10 @@ export type UserData = {
 }
 
 export const getUserData = async(email: string) => {
-    const res = await fetch(import.meta.env.VITE_KV_REST_API_URL + '/get/' + email, {
+    const res = await fetch(import.meta.env.KV_REST_API_URL + '/get/' + email, {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + import.meta.env.VITE_KV_REST_API_TOKEN_READONLY
+            Authorization: 'Bearer ' + import.meta.env.KV_REST_API_TOKEN_READONLY
         }
     })
     
@@ -19,10 +19,10 @@ export const getUserData = async(email: string) => {
 }
 
 export const setUserData = async(userData: UserData) => {
-    const res = await fetch(import.meta.env.VITE_KV_REST_API_URL + '/set/' + userData.email, {
+    const res = await fetch(import.meta.env.KV_REST_API_URL + '/set/' + userData.email, {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + import.meta.env.VITE_KV_REST_API_TOKEN
+            Authorization: 'Bearer ' + import.meta.env.KV_REST_API_TOKEN
         },
         body: JSON.stringify(userData)
     })

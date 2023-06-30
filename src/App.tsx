@@ -14,7 +14,6 @@ const App = () => {
     
     
     const [where, setWhere] = useState('home')
-    console.log('app rendered!', where, auth.user, userData)
 
     useEffect(() => {
         if (auth.user !== undefined) {

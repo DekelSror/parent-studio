@@ -10,8 +10,6 @@ const root = ReactDOM.createRoot(
 
 const AuthBoy = ({children}: {children?: JSX.Element}) => {
 
-  console.log(import.meta.env)
-
   return <Auth0Provider
     domain={import.meta.env.VITE_AUTH0_DOMAIN}
     clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}

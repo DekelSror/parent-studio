@@ -1,4 +1,4 @@
-import { Stack , Button, Typography, Input, FormControl} from '@mui/material'
+import { Stack , Button, Typography, FormControl, TextField} from '@mui/material'
 import { WizardContext } from '../store'
 import useBackend from '../Backend'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -13,15 +13,15 @@ const EditScript = ({onChange, active}: {onChange: (script: string) => void, act
     return <Stack>
         {active && <StreamScript variant='body2'>{script}</StreamScript>}
 
-        {!active && <Stack flex={2} direction='row' gap={2} >
+        {!active && <Stack flex={2} direction='column' gap={2} >
                 <Stack sx={{flex: 1}} gap={1}>
                     <Typography variant='h4' > Prompt </Typography>
-                    <Typography style={{width: 300}}>{prompt}</Typography>
+                    <Typography>{prompt}</Typography>
                 </Stack>
                 <Stack sx={{flex: 1}} gap={1}>
                     <Typography variant='h4' > Script </Typography>
                     <FormControl>
-                        <Input type='text' style={{width: 300}} value={script} onChange={e => onChange(e.target.value)} />
+                        <TextField multiline contentEditable maxRows={10} value={script} onChange={e => onChange(e.target.value)} />
                     </FormControl>
                 </Stack>
         </Stack>}

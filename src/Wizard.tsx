@@ -35,6 +35,7 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
     
     const [expanded, setExpanded] = useState<string>()
     const isStreaming = useRef(false)
+    const reviewConfirmed = useRef(false)
     
 
     // should be part of some store...
@@ -126,25 +127,26 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
         </expandedContext.Provider>
 
         <DBackdrop open={currentStep === AppStep.review} sx={{zIndex: 3}} onClick={() => {
-            console.log('backdrop click', AppStep[currentStep])
-            if (currentStep === AppStep.review) {
+            console.log('backdrop click', reviewConfirmed.current, 'and', AppStep[currentStep])
+            if (reviewConfirmed.current) {
+                setCurrentStep(AppStep.output)
+            } else {
                 setCurrentStep(AppStep.context)
             }
         }} >
             <StepContainer p={2} gap={3} height={400} overflow='scroll'>
 
-                <Typography variant='subtitle2'>please review your stuff</Typography>
+                <Typography variant='h4'>please review your stuff</Typography>
                 <Typography variant='subtitle1' style={{maxHeight: 500, whiteSpace: 'break-spaces', overflowY: 'scroll'}}> 
                     {Object.keys(w2d).map(k => <Typography key={k}>{k}: {w2d[k]}</Typography> )}
                 </Typography>
                 <NavButton
                     disabled={(currentStep !== AppStep.review) || (userData?.tier === 'guest')} 
                     onClick={() => {
-                        console.log('btton click')
-                        setCurrentStep(AppStep.output)
+                        reviewConfirmed.current = true
                         generateScript()
                     }} 
-                > 
+                >
                         {userData?.tier === 'guest' ? 'Please register with us to start generating' : 'Go!'}
                 </NavButton>
             </StepContainer>

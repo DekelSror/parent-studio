@@ -53,7 +53,7 @@ export const stateDict: (stt: WizardState) => {[k: string]: string} = stt => ({
     'siblings ages': stt.context.siblings.reduce((s, n) => s + (n.toString()) + ', ', '')
 })
 
-export const WizardContext = createContext<WizardState>({
+export const emptyState: () => WizardState = () => ({
     context: zeroCtx(),
     challenge: '',
     educationalMethods: [],
@@ -68,6 +68,8 @@ export const WizardContext = createContext<WizardState>({
     },
     outputUrl: undefined
 })
+
+export const WizardContext = createContext<WizardState>(emptyState())
 
 
 export const testState: () => WizardState = () => ({

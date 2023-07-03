@@ -22,30 +22,30 @@ export const theme = responsiveFontSizes(createTheme({
     typography: {
         fontFamily: 'Mulish',
         subtitle1: {
-            fontSize: 13,
+            fontSize: 17,
             fontWeight: 300,
         },
         subtitle2: {
-            fontSize: 15,
+            fontSize: 19,
             fontWeight: 400
         },
         h3: {
-            fontSize: 25,
+            fontSize: 31,
             fontWeight: 600,
             textTransform: 'uppercase'
         },
         h4: {
-            fontSize: 19,
+            fontSize: 22,
             fontWeight: 500,
             textTransform: 'capitalize',
         },
         body1: {
-            fontSize: 12,
-            fontWeight: 300
+            fontSize: 16,
+            fontWeight: 400
         },
         body2: {
-            fontSize: 12,
-            fontWeight: 200
+            fontSize: 16,
+            fontWeight: 300
         }
     },
     palette: {
@@ -59,16 +59,6 @@ export const theme = responsiveFontSizes(createTheme({
             disabled: colors.grey  
         }
     },
-}))
-
-export const RemoveButton = styled(Button)(() => ({
-    color: colors.black,
-    '&:hover': {
-        backgroundColor: colors.darkGrey,
-    },
-    ':disabled': {
-        backgroundColor: colors.grey
-    }
 }))
 
 export const AddButton = styled(Button)(() => ({
@@ -87,10 +77,11 @@ export const AddButton = styled(Button)(() => ({
 }))
 
 export const NavButton = styled(Button)(() => ({
-    backgroundColor: colors.orange,
+    backgroundColor: colors.darkerBlue,
     fontFamily: 'DM Sans',
     color: colors.white,
     maxWidth: 'fit-content',
+    transition: 'background-color 200ms ease-out, color 200ms ease-out',
     ':hover': {
         color: colors.black,
     },
@@ -109,18 +100,46 @@ export const ButtonGroupButton = styled(Button)(() => ({
         border: 'unset',
         borderRadius: 0,
     },
-    ':active': {
-        backgroundColor: colors.darkerBlue,
+}))
+
+export const SelectedButton = styled(Button)(() => ({
+    flex: 1, 
+    border: 'unset',
+    color: colors.white,
+    backgroundColor: colors.green,
+    transition: 'background-color 200ms ease-in-out, color 200ms ease-in-out',
+    ':hover': {
+        backgroundColor: colors.orange,
+        border: 'unset',
+        borderRadius: 0,
+    },
+}))
+
+
+export const UnselectedButton = styled(Button)(() => ({
+    flex: 1, 
+    border: 'unset',
+    color: colors.black,
+    backgroundColor: colors.white,
+    transition: 'background-color 200ms ease-in-out, color 200ms ease-in-out',
+    ':hover': {
+        backgroundColor: colors.orange,
         color: colors.white,
         border: 'unset',
-    }
+        borderRadius: 0,
+    },
 }))
 
 export const AppContainer = styled(Stack)(() => ({
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: colors.babyBlue,
     padding: '80px 40px 0px 40px',
     alignItems: 'center',
-    justifyContent: 'center',
+    overflowY: 'visible',
+    // justifyContent: 'center',
+    [theme.breakpoints.down('sm')]: {
+        padding: '80px 12px 0px 12px',
+        height: '200vh',
+    }
 
 }))
 
@@ -147,10 +166,13 @@ export const DInput = styled(Input)(() => ({
 }))
 
 export const StepContainer = styled(Stack)(() => ({
-    backgroundColor: theme.palette.background.default,
-    padding: '5rem 3rem 5rem 3rem',
-    boxShadow: '2px 1px 1px #777777',
-    width: '70%',
+    backgroundColor: colors.white,
+    padding: '6rem',
+    borderRadius: 20,
+    justifyContent: 'center',
+    [theme.breakpoints.down('sm')]: {
+        padding: '2rem',
+    }
 }))
 
 export const StreamScript = styled(Typography)(() => ({

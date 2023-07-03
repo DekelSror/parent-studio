@@ -1,7 +1,7 @@
-import { Checkbox, Collapse, Divider, Stack, Typography } from '@mui/material'
+import { Checkbox, Collapse, Stack, Typography } from '@mui/material'
 import { useContext, useState } from 'react'
 import { FamilyContext, WizardContext, answers } from '../store'
-import { AddButton, DSlider, DSwitch, SelectLabel, colors } from '../styles'
+import { AddButton, DSlider, DSwitch, SelectLabel } from '../styles'
 import { globz } from '../globalize'
 import OptionsAndInput from '../OptionsAndInput'
 import { expandedContext } from '../Wizard'
@@ -13,10 +13,10 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
 
     const [siblingAge, setSiblingAge] = useState(0)
     const [childAtSchool, setChildAtSchool] = useState(Boolean(context.gradeAtSchool))
-    // const smallScreen = useMediaQuery('@media (max-width:600px)')
 
 
     return <Stack gap={3} p={2} >
+        <Typography variant='h5' > 2. Context - family, home, activities ({context.targetChildAge}) </Typography>
         <Stack direction='row'>
             <Typography variant='subtitle2' > {globz('context.targetChildAge')} ({context.targetChildAge}) </Typography>
             <DSlider 
@@ -41,9 +41,9 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
             />
         </Stack>
 
-        {expanded !== 'context' && <AddButton onClick={() => setExpanded(expanded === 'context' ? undefined : 'context')} > more ... </AddButton>}
-        {expanded !== 'context' && <Divider sx={{backgroundColor: colors.grey, boxShadow: 1}} />}
-
+        {expanded !== 'context' && <AddButton onClick={() => setExpanded(expanded === 'context' ? undefined : 'context')} >
+            {expanded === 'context' ? 'close' : 'more context ... '}
+        </AddButton>}
 
         <Collapse in={expanded === 'context'} >
             <Stack direction='column' >
@@ -93,7 +93,6 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
                 </Stack>
             </form>
             <AddButton onClick={() => setExpanded(undefined)} > less ... </AddButton>
-            <Divider sx={{backgroundColor: colors.grey, boxShadow: 1, mt: 3}} />
         </Collapse>
 
     </Stack>

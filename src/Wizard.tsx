@@ -1,6 +1,6 @@
 import { createContext, useContext, useRef, useState } from 'react'
-import { NavButton, StepContainer } from './styles'
-import { Backdrop, Button, Stack, Typography, styled } from '@mui/material'
+import { AddButton, NavButton, StepContainer, colors } from './styles'
+import { Backdrop, Stack, Typography, styled } from '@mui/material'
 import Challenge from './stepComponents/Challenge'
 import ConfigAvatar from './stepComponents/ConfigAvatar'
 import ConfigOutput from './stepComponents/ConfigOutput'
@@ -8,7 +8,7 @@ import ContextQuestions from './stepComponents/ContextQuestions'
 import EditScript from './stepComponents/EditScript'
 import EducationalMethods from './stepComponents/EducationalMethods'
 import Finalize from './stepComponents/Finalize'
-import { WizardState, WizardContext, testState } from './store'
+import { WizardState, WizardContext, emptyState, stateDict } from './store'
 import useBackend from './Backend'
 import PromptBuilder from './PromptBuilder'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -26,12 +26,14 @@ const DBackdrop = styled(Backdrop)(() => ({
 }))
 
 const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExit: () => void}) => {
-    const [state, setState] = useState<WizardState>(testState())
-    const backend = useBackend()
-    const [expanded, setExpanded] = useState<string>()
-    const [currentStep, setCurrentStep] = useState(AppStep.context)
     const {user} = useAuth0()
     const userData = useContext(UserDataContext)
+    const backend = useBackend()
+
+    const [state, setState] = useState<WizardState>(userData?.savedAnswers || emptyState())
+    const [currentStep, setCurrentStep] = useState(AppStep.context)
+    
+    const [expanded, setExpanded] = useState<string>()
     const isStreaming = useRef(false)
     
 
@@ -87,58 +89,63 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
         }
     }
 
-    const testSetUser = async() => {
-        const res = await fetch(import.meta.env.VITE_KV_REST_API_URL + '/set/abe@maisautonomia.com.br', {
-            method: 'post',
-            headers: {
-                Authorization: 'Bearer ' + import.meta.env.VITE_KV_REST_API_TOKEN
-            },
-            body: JSON.stringify({
-                tier: 'editor',
-                videos: [],
-                savedAnswers: testState()
-            })
-        })
-
-        const j = await res.json()
-
-        console.log(j)
-    }
-
-    console.log('wizard', AppStep[currentStep])
+    // console.log('wizard', userData?.tier)
+    const w2d = stateDict(state)
             
     return <WizardContext.Provider value={state}>
         <expandedContext.Provider value={{expanded: expanded, setExpanded: setExpanded}}>
         <Typography> hello, {user?.given_name} | {user?.locale} </Typography>
         
-        <Button onClick={testSetUser} > TEST SET USER </Button>
+        {/* <Button onClick={() => {
+            // setUserData({email: 'nash.idan@gmail.com', tier: 'editor', videos: [], savedAnswers: emptyState()}
+            if (user?.email) {
+                getUserData(user.email)
 
-        <StepContainer gap={2}>
-            <Typography variant='h3' > Context </Typography>
+            }
+        }} > TEST SET USER </Button> */}
+
+        {userData && <StepContainer gap={2}>
+            <div style={{display: 'flex', flexDirection: 'column', padding: 5, gap: 5, alignItems: 'center', backgroundColor: colors.purple}} >
+                <Typography paddingBottom={2} variant='h3' color={colors.white} > Creation Wizard </Typography>
+                <Typography variant='h6' color={colors.white} > 
+                    Make educational videos or stories for your children or pupils with only a few clicks! 
+                </Typography>
+            </div>
+
             <Challenge onChange={challenge => setState({...state, challenge: challenge})} />
             <ContextQuestions onSubmit={ctx => setState({...state, context: ctx})} />
             <EducationalMethods onSubmit={methods => setState({...state, educationalMethods: methods})} />
             <ConfigOutput onChange={config => setState({...state, outputConfig: config})} />
-            {userData?.tier === 'editor' && <PromptBuilder />}
-            <NavButton disabled={currentStep !== AppStep.context} onClick={() => setCurrentStep(AppStep.review)} > Generate Script </NavButton>
-        </StepContainer>
+            {userData.tier === 'editor' && <PromptBuilder />}
+            <AddButton disabled={currentStep !== AppStep.context} onClick={() => setCurrentStep(AppStep.review)} > 
+                <Typography variant='h5'>
+                Generate Script 
+            </Typography>
+            </AddButton>
+        </StepContainer>}
         </expandedContext.Provider>
 
-        <DBackdrop open={currentStep === AppStep.review} sx={{zIndex: 3}} >
+        <DBackdrop open={currentStep === AppStep.review} sx={{zIndex: 3}} onClick={() => {
+            console.log('backdrop click', AppStep[currentStep])
+            if (currentStep === AppStep.review) {
+                setCurrentStep(AppStep.context)
+            }
+        }} >
             <StepContainer p={2} gap={3} height={400} overflow='scroll'>
 
                 <Typography variant='subtitle2'>please review your stuff</Typography>
-                <Typography variant='subtitle1' style={{maxHeight: 270, whiteSpace: 'break-spaces', overflowY: 'scroll'}}> 
-                    {JSON.stringify(state, null, 4)}
+                <Typography variant='subtitle1' style={{maxHeight: 500, whiteSpace: 'break-spaces', overflowY: 'scroll'}}> 
+                    {Object.keys(w2d).map(k => <Typography key={k}>{k}: {w2d[k]}</Typography> )}
                 </Typography>
                 <NavButton
                     disabled={(currentStep !== AppStep.review) || (userData?.tier === 'guest')} 
                     onClick={() => {
+                        console.log('btton click')
                         setCurrentStep(AppStep.output)
                         generateScript()
                     }} 
                 > 
-                    {userData?.tier === 'guest' ? 'Please register with us to start generating' : 'Go!'}
+                        {userData?.tier === 'guest' ? 'Please register with us to start generating' : 'Go!'}
                 </NavButton>
             </StepContainer>
         </DBackdrop>
@@ -146,7 +153,7 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
         {currentStep === AppStep.output && <StepContainer >
             <EditScript onChange={script => setState({...state, script: script})} active={isStreaming.current} />
             <ConfigAvatar />
-            <NavButton disabled={user === undefined} onClick={() => {
+            <NavButton disabled onClick={() => {
                 generateVideo()
                 setCurrentStep(AppStep.finalize)
             }} >
@@ -160,8 +167,19 @@ const Wizard = ({onSubmit, onExit}: {onSubmit: (stt: WizardState) => void, onExi
         </StepContainer>}
 
         <Stack direction='row' gap={4} justifyContent='space-around' >
-            <NavButton onClick={onExit} > exit </NavButton>
-            <NavButton onClick={() => setCurrentStep(AppStep.context)} > restart </NavButton>
+            <NavButton onClick={() => {
+                onExit()
+                window.scrollTo(0, 0)
+            }} > 
+                exit 
+            </NavButton>
+            <NavButton onClick={() => {
+                setState(emptyState())
+                setCurrentStep(AppStep.context)
+                window.scrollTo(0, 0)
+            }} > 
+                restart 
+            </NavButton>
         </Stack>
 
     </WizardContext.Provider>

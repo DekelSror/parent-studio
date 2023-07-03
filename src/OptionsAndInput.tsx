@@ -1,56 +1,55 @@
 import { ButtonGroup, Button, Input, FormControl, Select, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { ButtonGroupButton, SelectInput, SelectItem, colors } from './styles'
-
+import { SelectInput, SelectItem, SelectedButton, UnselectedButton, colors } from './styles'
 
 type OptionsAndInputProps = {
     options: string[], 
     multiple?: boolean, 
     withInput: boolean
     onChange: (items: string | string[]) => void
-    itemComponent?: (item: string) => JSX.Element
     addLabel?: string
 }
 
-const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent, addLabel}: OptionsAndInputProps) => {
+const OptionsAndInput = ({options, multiple, withInput, onChange, addLabel}: OptionsAndInputProps) => {
     const [selected, setSelected] = useState<string[]>([])
     const [written, setWritten] = useState<string[]>([])
     const [edited, setEdited] = useState('')
+    const [inputFocused, setInputFocused] = useState(false)
 
     const handleChange = (val: string[]) => {
+        console.log(val, selected)
         setSelected(val)
-        onChange(multiple ? val : val[0])
+        onChange(multiple ? val : (val.length > 0 ? val[0] : val))
     }
 
     return <Stack>
-        <ButtonGroup style={{display: 'flex', flexDirection: 'row', gap: 10, flex: 4, padding: 2}} >
-            {options.map((opt, i) => {
-                return <ButtonGroupButton
-                    style={{backgroundColor: selected.includes(opt) ? colors.green : 'inherit'}}
+        <ButtonGroup style={{display: 'flex', flexDirection: 'row', gap: 10, padding: 2}}>
+            {options.map(opt => {
+                return selected.includes(opt) ? <SelectedButton
                     key={opt}
                     onClick={() => {
-                        if (selected.includes(opt)) {
-                            let after = selected.slice()
-                            after.splice(i)
-                            handleChange(after)
+                        let after = selected.slice()
+                        after.splice(selected.indexOf(opt))
+                        handleChange(after)
+                }}>
+                    <Typography variant='subtitle2' > {opt} </Typography>
+                </SelectedButton> : <UnselectedButton
+                    key={opt}
+                    onClick={() => {
+                        if (multiple) {
+                            handleChange([...selected, opt])
                         }
                         else {
-                            if (multiple) {
-                                handleChange([...selected, opt])
-                            }
-                            else {
-                                handleChange([opt])
-                            }
+                            handleChange([opt])
                         }
                     }}
                 >
-                    {itemComponent && itemComponent(opt)}
-                    {!itemComponent && <Typography>{opt}</Typography>}
-                </ButtonGroupButton>
+                    <Typography variant='subtitle2' > {opt} </Typography>
+                </UnselectedButton>
             })}
         </ButtonGroup>
 
-        {withInput && <>
+        {withInput && <Stack p={3}  style={{border: '3px solid pink'}}>
             {multiple && (written.length > 0) && <FormControl>
                 <Select
                     input={<SelectInput />}
@@ -58,8 +57,6 @@ const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent,
                     value={written}
                     onChange={e => {
                         const val = e.target.value as string[]
-
-                        // console.log(e.target.value)
 
                         if (!multiple) {
                             setWritten([val[0]])
@@ -71,22 +68,30 @@ const OptionsAndInput = ({options, multiple, withInput, onChange, itemComponent,
                     {written.map(w => <SelectItem key={w} value={w}>{w}</SelectItem>)}
                 </Select>
             </FormControl>}
-            {!multiple && (written.length > 0) && <Typography> {written[0]} </Typography>}
+            {!multiple && (written.length > 0) && <Button variant='text' onClick={() => setWritten([])}> {written[0]} </Button>}
 
-            <Input style={{width: '45%', height: 50}} type='text' value={edited} onChange={e => setEdited(e.target.value)} />
-            <Button onClick={() => {
-                if (edited !== '') {
-                    setWritten([...written, edited])
-                    setEdited('')
-                }
-            }} > 
-                {addLabel || 'add free text item '}
-            </Button>
-        </>}
+            <FormControl>
+                <Stack alignItems='start' borderRadius={3} width='fit-content' p={'1rem 6rem 1rem 6rem'} style={{backgroundColor: colors.white + 'cc'}}>
+                    <Input onFocus={() => {
+                        setInputFocused(true)
+                    }} 
+                    
+                    type='text' value={edited} onChange={e => setEdited(e.target.value)} />
+                    <Button onClick={() => {
+                        if (edited !== '') {
+                            setWritten([...written, edited])
+                            setEdited('')
+                            setInputFocused(false)
+                        }
+                    }}>
+                        <Typography color={inputFocused ? colors.darkerBlue : colors.black}>
+                            {addLabel || 'add free text item '}
+                        </Typography>
+                    </Button>
+                </Stack>
+            </FormControl>
+        </Stack>}
     </Stack>
 }
-
-
-
 
 export default OptionsAndInput

@@ -7,25 +7,27 @@ export type UserData = {
     savedAnswers?: WizardState
 }
 
+const url = import.meta.env.VITE_KV_REST_API_URL
+const token = import.meta.env.VITE_KV_REST_API_TOKEN
+const tokenReadonly = import.meta.env.VITE_KV_REST_API_TOKEN_READONLY
+
 export const getUserData = async(email: string) => {
-    const url = import.meta.env.VITE_KV_REST_API_URL
-    const token = import.meta.env.VITE_KV_REST_API_TOKEN_READONLY
     
     const res = await fetch(url + '/get/' + email, {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + tokenReadonly
         }
     })
-    
-    return (await res.json() as {result: UserData | undefined}).result
+
+    return JSON.parse((await res.json()).result) as UserData | undefined
 }
 
 export const setUserData = async(userData: UserData) => {
-    const res = await fetch(import.meta.env.KV_REST_API_URL + '/set/' + userData.email, {
+    const res = await fetch(url + '/set/' + userData.email, {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + import.meta.env.KV_REST_API_TOKEN
+            Authorization: 'Bearer ' + token
         },
         body: JSON.stringify(userData)
     })

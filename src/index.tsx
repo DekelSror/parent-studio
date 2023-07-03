@@ -14,6 +14,13 @@ const AuthBoy = ({children}: {children?: JSX.Element}) => {
     domain={import.meta.env.VITE_AUTH0_DOMAIN}
     clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
     authorizationParams={{redirect_uri: window.location.origin}}
+    cacheLocation='localstorage'
+    useRefreshTokens
+    // onRedirectCallback={(_, user) => {
+    //   if (user) {
+        
+    //   }
+    // }}
   >
     {children}
   </Auth0Provider>

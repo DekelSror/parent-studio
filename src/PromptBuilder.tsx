@@ -25,7 +25,7 @@ const PromptBuilder = () => {
     const [freetext, setFreetext] = useState('')
 
     return <>
-        <Typography> Prompt Builder </Typography>
+        <Typography variant='h4'> Prompt Builder </Typography>
         <div 
             style={{minHeight: 50, border: '1px solid black', display: 'flex', flexWrap: 'wrap', flexGrow: 1, flexShrink: 100}} 
             onDrop={e => {

@@ -1,30 +1,29 @@
 import mixpanel from "mixpanel-browser";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { UserDataContext } from "./users";
 
 class Metrics {
     constructor() {
-        mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN || '', { track_pageview: true })
-
-        // idea - on init failure, return a new MockService that doesn't crash
-        
+        mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN || '')
     }
 
-    send(eventType: string, content?: {[k: string]: string}) {
+    send(eventType: string, content?: Record<string, any>) {
         mixpanel.track(eventType, content)
     }
 }
 
 const metrics = new Metrics()
 
-export const useMetrics = () => {
-    // we can useEffect to mixpanel.identify when a user signs in
-    return metrics
-}
+export const useMetrics = (pageName: string) => {
+    const userData = useContext(UserDataContext)
 
-export const usePlaceEvent = (name: string) => {
     useEffect(() => {
-        mixpanel.track('place_visited', {place_name: name})
-        return () => mixpanel.track('place_left', {place_name: name})
-    }, [])
+        if (userData.tier != 'guest') {
+            metrics.send('page visited', {page: pageName, ...userData})
+            return () => metrics.send('page exited', {page: pageName, ...userData})
+        }
 
+    }, [userData])
+
+    return (eventType: string, content?: Record<string, any>) => metrics.send(eventType, {page: pageName, ...userData, ...content})
 }

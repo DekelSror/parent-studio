@@ -34,10 +34,8 @@ export type WizardState = {
     script: string
     outputConfig: {
         videoLength: number
-        deliveryStyle: 'educational' | 'counsel' | 'story',
-    }
-    avatarConfig: {
-        gender: 'f' | 'm'
+        deliveryStyle: 'educational' | 'counsel' | 'story'
+        presenterId: string
     }
     outputUrl?: string
 }
@@ -50,7 +48,8 @@ export const stateDict: (stt: WizardState) => {[k: string]: string} = stt => ({
     'methods': stt.educationalMethods.join(', '),
     'delivery style': stt.outputConfig.deliveryStyle,
     'siblings number': stt.context.siblings.length.toString(),
-    'siblings ages': stt.context.siblings.reduce((s, n) => s + (n.toString()) + ', ', '')
+    'siblings ages': stt.context.siblings.reduce((s, n) => s + (n.toString()) + ', ', ''),
+    'presenter': stt.outputConfig.presenterId
 })
 
 export const emptyState: () => WizardState = () => ({
@@ -62,9 +61,7 @@ export const emptyState: () => WizardState = () => ({
     outputConfig: {
         videoLength: 60,
         deliveryStyle: 'educational',
-    },
-    avatarConfig: {
-        gender: 'f'
+        presenterId: 'n/a'
     },
     outputUrl: undefined
 })
@@ -88,9 +85,7 @@ export const testState: () => WizardState = () => ({
     outputConfig: {
         videoLength: 60,
         deliveryStyle: 'educational',
-    },
-    avatarConfig: {
-        gender: 'f'
+        presenterId: 'n/a'
     },
     outputUrl: undefined
 })

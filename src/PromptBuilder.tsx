@@ -1,7 +1,9 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { WizardContext, stateDict } from './store'
 import { Button, ButtonGroup, FormControl, IconButton, Input, InputLabel, Stack, Typography } from '@mui/material'
 import { RemoveCircleOutline } from '@mui/icons-material'
+import { AddButton } from './styles'
+import useBackend from './Backend'
 
 
 type PromptTerm = {
@@ -19,10 +21,20 @@ type PromptTerm = {
 const PromptBuilder = () => {
     const wizardState = useContext(WizardContext)
     const [seq, setSeq] = useState<PromptTerm[]>([])
+    const backend = useBackend()
+    const prompts = useRef<{version: string, seq: PromptTerm[]}[]>([])
+    const version = useRef(0)
 
     const w2d = stateDict(wizardState)
 
     const [freetext, setFreetext] = useState('')
+
+    useEffect(() => {
+        backend.getPrompts().then(res => {
+            prompts.current = res.map(item => JSON.parse(item) as {version: string, seq: PromptTerm[]})
+            version.current = res.length
+        })
+    }, [])
 
     return <>
         <Typography variant='h4'> Prompt Builder </Typography>
@@ -58,11 +70,11 @@ const PromptBuilder = () => {
         <ButtonGroup>
             {Object.keys(w2d).map(k => <Button
                 draggable
+                key={k}
                 onDragStart={e => {
                     e.dataTransfer.effectAllowed = 'copy'
                     e.dataTransfer.setData('application/json', JSON.stringify({termType: 'key', value: k}))
                 }}
-                key={k}
             >
                 {k}
             </Button>)}
@@ -84,6 +96,19 @@ const PromptBuilder = () => {
                 +
             </Button>
         </FormControl>
+        
+        <Stack>
+            {prompts.current.map(prompt => <Stack key={prompt.version}> 
+                {prompt.version}
+                <Button > load prompt to editor </Button>
+            </Stack>)}
+        </Stack>
+
+        <AddButton onClick={() => {
+            backend.savePrompt(JSON.stringify({version: version, seq: seq}))
+        }} > 
+            save prompt 
+        </AddButton>
     </>
 }
 

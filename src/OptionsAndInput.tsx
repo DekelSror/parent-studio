@@ -1,6 +1,6 @@
-import { ButtonGroup, Button, Input, FormControl, Select, Stack, Typography } from '@mui/material'
+import { ButtonGroup, Button, FormControl, Select, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { SelectInput, SelectItem, SelectedButton, UnselectedButton, colors } from './styles'
+import { AddButton, DInput, SelectInput, SelectItem, SelectLabel, SelectedButton, UnselectedButton } from './styles'
 
 type OptionsAndInputProps = {
     options: string[], 
@@ -12,12 +12,10 @@ type OptionsAndInputProps = {
 
 const OptionsAndInput = ({options, multiple, withInput, onChange, addLabel}: OptionsAndInputProps) => {
     const [selected, setSelected] = useState<string[]>([])
-    const [written, setWritten] = useState<string[]>([])
+    const [custom, setCustom] = useState<string[]>([])
     const [edited, setEdited] = useState('')
-    const [inputFocused, setInputFocused] = useState(false)
 
     const handleChange = (val: string[]) => {
-        console.log(val, selected)
         setSelected(val)
         onChange(multiple ? val : (val.length > 0 ? val[0] : val))
     }
@@ -49,46 +47,49 @@ const OptionsAndInput = ({options, multiple, withInput, onChange, addLabel}: Opt
             })}
         </ButtonGroup>
 
-        {withInput && <Stack p={3}  style={{border: '3px solid pink'}}>
-            {multiple && (written.length > 0) && <FormControl>
+        {withInput && <Stack p={3} >
+            {multiple && (custom.length > 0) && <FormControl>
                 <Select
                     input={<SelectInput />}
-                    multiple={multiple}
-                    value={written}
+                    multiple
+                    value={custom}
                     onChange={e => {
                         const val = e.target.value as string[]
 
                         if (!multiple) {
-                            setWritten([val[0]])
+                            setCustom([val[0]])
                         } else {
-                            setWritten(val)
+                            setCustom(val)
                         }
                     }}
                 >
-                    {written.map(w => <SelectItem key={w} value={w}>{w}</SelectItem>)}
+                    {custom.map(w => <SelectItem key={w} value={w}>{w}</SelectItem>)}
                 </Select>
             </FormControl>}
-            {!multiple && (written.length > 0) && <Button variant='text' onClick={() => setWritten([])}> {written[0]} </Button>}
+            {!multiple && (custom.length > 0) && <Button variant='text' onClick={() => setCustom([])}> {custom[0]} </Button>}
 
-            <FormControl>
-                <Stack alignItems='start' borderRadius={3} width='fit-content' p={'1rem 6rem 1rem 6rem'} style={{backgroundColor: colors.white + 'cc'}}>
-                    <Input onFocus={() => {
-                        setInputFocused(true)
-                    }} 
-                    
-                    type='text' value={edited} onChange={e => setEdited(e.target.value)} />
-                    <Button onClick={() => {
-                        if (edited !== '') {
-                            setWritten([...written, edited])
-                            setEdited('')
-                            setInputFocused(false)
+            <FormControl sx={{gap: 3}}>
+                <SelectLabel> {addLabel || 'add free text item '}</SelectLabel>
+                <DInput 
+                    sx={{maxWidth: '50%'}} 
+                    type='text' 
+                    value={edited} 
+                    onChange={e => setEdited(e.target.value)} 
+                />
+                <AddButton onClick={() => {
+                    if (edited !== '') {
+                        if (multiple) {
+                            setCustom([...custom, edited])
                         }
-                    }}>
-                        <Typography color={inputFocused ? colors.darkerBlue : colors.black}>
-                            {addLabel || 'add free text item '}
-                        </Typography>
-                    </Button>
-                </Stack>
+                        else {
+                            setCustom([edited])
+                        }
+
+                        setEdited('')
+                    }
+                }}>
+                    ADD
+                </AddButton>
             </FormControl>
         </Stack>}
     </Stack>

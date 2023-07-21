@@ -1,41 +1,17 @@
 import { AppBar, Box, Button, CssBaseline, Stack, ThemeProvider, Toolbar, Typography } from '@mui/material'
-import { createContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AppContainer, StepContainer, theme, colors, NavButton, AddButton } from './styles'
 import Wizard from './Wizard'
 import { useAuth0 } from '@auth0/auth0-react'
-import { UserData, getUserData } from './users'
-import { emptyState } from './store'
+import PromptBuilder from './PromptBuilder'
+import { UserDataContext, canAccess } from './users'
 
-
-export const UserDataContext = createContext<UserData | undefined>(undefined)
 
 const App = () => {
-    const auth = useAuth0()
-    const [userData, setUserData] = useState<UserData>()
-    
-    
+    const auth = useAuth0()        
     const [where, setWhere] = useState('home')
-
-    useEffect(() => {
-        if (auth.user !== undefined) {
-            if (auth.user.email !== undefined) {
-                setWhere('wizard')
-                getUserData(auth.user.email).then(udata => {
-                    if (udata) {
-                        setUserData(udata)
-                        // if (where === 'home') setWhere('wizard')
-                    }
-                    else {
-                        // first time??
-                        setUserData({email: auth.user!.email!, tier: 'regular' , videos: [], savedAnswers: emptyState()})
-                    }
-                })
-            } else {
-                setUserData(undefined)
-            }
-        }
-    }, [auth.user])
-
+    const userData = useContext(UserDataContext)
+    
     if (auth.isLoading) return <>loading auth</>
 
     return <ThemeProvider theme={theme}>
@@ -44,10 +20,15 @@ const App = () => {
 
         <AppBar sx={{backgroundColor: colors.purple +  'ee'}} >
             <Toolbar>
-                {auth.user && <Button onClick={() => auth.logout()} >logout</Button>}
-                <Button variant='contained' > LOGO or Something </Button>
+                <Button variant='contained' onClick={() => {
+                    setWhere('home')
+                    window.scrollTo(0, 0)
+                }} >
+                    LOGO or Something
+                </Button>
                 <Box width='100%' />
                 {!auth.isAuthenticated && <AddButton onClick={() => auth.loginWithRedirect()} > LOGIN </AddButton>}
+                {auth.user && <NavButton onClick={() => auth.logout()} >logout</NavButton>}
             </Toolbar>
         </AppBar>
 
@@ -57,29 +38,41 @@ const App = () => {
                     <Typography variant='h4' color={colors.white} textAlign='center' > WELCOME blah blah blah </Typography>
                 </div>
                 {!auth.isAuthenticated && <AddButton onClick={() => auth.loginWithRedirect()} > LOGIN </AddButton>}
-                {auth.isAuthenticated && userData && <AddButton onClick={() => setWhere('wizard')} > go to wizard </AddButton>}
-                {userData?.tier === 'editor' && <> add / remove users (only editors see this) </>}
+                {canAccess('wizard:view', userData) && <AddButton onClick={() => setWhere('wizard')} > go to wizard </AddButton>}
+                {/* <Button onClick={() => {
+                    getUserData('abe@maisautonomia.com.br').then(u => {
+                        console.log(u, u?.email)
+                        if (u) {
+                            setUserData({...u, tier: 'regular'})
+                        }
+                    })
+                }} > 
+                    set user 
+                </Button> */}
+                {userData.tier !== 'guest' && <Stack>
+                    <Typography>your videos</Typography>
+                    {userData.videos.map(v => <Typography key={v}>{v}</Typography>)}
+                </Stack>}
             </StepContainer>
 
             <StepContainer style={{maxWidth: '75%'}} gap={3}mb={4} >
                 <Typography variant='subtitle1'> Help children understand morals and ideas, and have them confront challenges in a secure, individually crafted environment </Typography>
                 <Typography variant='subtitle1'> Quick - we have ready-made answers to get your content ready A$AP </Typography>
                 <Typography variant='subtitle1'> You have the control - insert free text answers as well </Typography>
-                <Typography variant='subtitle1'> Tweak the educational mathods and delivery style of the video </Typography>
+                <Typography variant='subtitle1'> Tweak the educational method and delivery style of the video </Typography>
                 <Typography variant='subtitle1'> maybe a graphic of the wizard process </Typography>
                 <NavButton> Do something </NavButton>
             </StepContainer>
 
-            <StepContainer style={{maxWidth: '75%'}} gap={3}mb={4} >
+            <StepContainer style={{maxWidth: '75%'}} gap={3} mb={4} >
                 <Typography variant='subtitle1'> Gallery of testaments of the quality of our stuff </Typography>
                 <Typography variant='subtitle1'> some other details that may or may not matter </Typography>
                 <NavButton> Do something else! </NavButton>
             </StepContainer>
         </Stack>}
 
-        <UserDataContext.Provider value={userData}>
-            {(userData !== undefined) && (where === 'wizard') && <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />}
-        </UserDataContext.Provider>
+        {where === 'wizard' && <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />}
+        {where === 'editor' && <PromptBuilder />}
 
 
         <AppBar position='sticky' color='transparent' style={{backgroundColor: colors.white}}>

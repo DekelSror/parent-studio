@@ -1,7 +1,7 @@
-import { Checkbox, Collapse, Stack, Typography } from '@mui/material'
+import { Checkbox, Collapse, FormControl, Stack, Typography } from '@mui/material'
 import { useContext, useState } from 'react'
 import { FamilyContext, WizardContext, answers } from '../store'
-import { AddButton, DSlider, DSwitch, SelectLabel } from '../styles'
+import { AddButton, DInput, DSlider, DSwitch, SelectLabel } from '../styles'
 import { globz } from '../globalize'
 import OptionsAndInput from '../OptionsAndInput'
 import { expandedContext } from '../Wizard'
@@ -16,7 +16,18 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
 
 
     return <Stack gap={3} p={2} >
-        <Typography variant='h5' > 2. Context - family, home, activities ({context.targetChildAge}) </Typography>
+        <Typography variant='h5' > 2. Context </Typography>
+        <Stack gap={2} p={2} maxWidth='60%'>
+        <FormControl>
+                <SelectLabel > child's name </SelectLabel>
+                <DInput />
+        </FormControl>
+        <FormControl>
+                <SelectLabel > nickname </SelectLabel>
+                <DInput />
+        </FormControl>
+        </Stack>
+
         <Stack direction='row'>
             <Typography variant='subtitle2' > {globz('context.targetChildAge')} ({context.targetChildAge}) </Typography>
             <DSlider 
@@ -30,7 +41,7 @@ const ContextQuestions = ({onSubmit}: {onSubmit: (ctx: FamilyContext) => void}) 
             />
         </Stack>
 
-        <Stack  >
+        <Stack>
             <SelectLabel id='favorite activities'> {globz('context.favoriteActivities')} </SelectLabel>
             <OptionsAndInput 
                 options={answers.favoriteActivities}

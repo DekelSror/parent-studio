@@ -160,8 +160,10 @@ export const DSwitch = styled(Switch)(() => ({
 }))
 
 export const DInput = styled(Input)(() => ({
+    color: colors.black,
     '&:after': {
-        borderBottom: '2px solid #333333'
+        // borderBottom: '2px solid #333333'
+        borderColor: colors.grey
     }
 }))
 
@@ -182,11 +184,11 @@ export const StreamScript = styled(Typography)(() => ({
 
 export const SelectLabel = styled(InputLabel)(() => ({
     fontSize: 17,
-    color: colors.darkerBlue,
-    transition: 'font-size color 200ms',
+    color: colors.black,
+    transition: '200ms ease-out',
     '&.Mui-focused': {
         fontSize: 12,
-        color: colors.black
+        color: colors.grey
     }
 }))
 
@@ -199,6 +201,9 @@ export const SelectInput = styled(OutlinedInput)(() => ({
             border: '2px solid ' + colors.darkerBlue,
             color: colors.black
         }
+    },
+    '&:after': {
+        borderColor: colors.green
     }
 }))
 

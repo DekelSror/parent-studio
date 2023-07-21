@@ -51,7 +51,9 @@ export class DidVideoProvider implements VideoProvider<DidPresenter, DidDriver> 
     dIdHeaders: HeadersInit = {
         Accept: 'application/json',
         Authorization: 'Basic ' + this.dIdKey,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true'
     }
 
 
@@ -134,7 +136,7 @@ export class OpenAiCompletionProvider implements CompletionProvider {
     openaiKey = import.meta.env.VITE_OPENAI_KEY
 
     client = new OpenAIApi(new Configuration({
-        apiKey: this.openaiKey
+        apiKey: this.openaiKey,
     }))
 
     handleChatStream = (e: ProgressEvent) => {

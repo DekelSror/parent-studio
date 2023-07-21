@@ -15,10 +15,11 @@ const AuthBoy = ({children}: {children?: JSX.Element}) => {
     const {user, isAuthenticated, isLoading} = useAuth0()
 
     useMemo(() => {
-        console.log('memo', user, udata)
         if (user?.email && udata.email === 'n/a') {
+            console.log('logged in w/o udata')
             getUserData(user.email).then(val => {
                 if (val) {
+                    console.log('got dat udata')
                     setUdata(val)
                 }
             })

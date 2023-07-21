@@ -27,7 +27,7 @@ const App = () => {
                 </Button>
                 <Box width='100%' />
                 {!auth.isAuthenticated && <AddButton onClick={() => auth.loginWithRedirect()} > LOGIN </AddButton>}
-                {auth.user && <NavButton onClick={() => auth.logout()} >logout</NavButton>}
+                {auth.user && <NavButton onClick={() => auth.logout({openUrl: window.location.replace})} >logout</NavButton>}
             </Toolbar>
         </AppBar>
 

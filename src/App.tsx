@@ -3,7 +3,6 @@ import { useContext, useState } from 'react'
 import { AppContainer, StepContainer, theme, colors, NavButton, AddButton } from './styles'
 import Wizard from './Wizard'
 import { useAuth0 } from '@auth0/auth0-react'
-import PromptBuilder from './PromptBuilder'
 import { UserDataContext, canAccess } from './users'
 
 
@@ -72,8 +71,6 @@ const App = () => {
         </Stack>}
 
         {where === 'wizard' && <Wizard onSubmit={stt => {console.log(stt)}} onExit={() => setWhere('home')} />}
-        {where === 'editor' && <PromptBuilder />}
-
 
         <AppBar position='sticky' color='transparent' style={{backgroundColor: colors.white}}>
             <Toolbar style={{display: 'flex', justifyContent: 'space-around'}}>
